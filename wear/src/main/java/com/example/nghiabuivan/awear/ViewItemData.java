@@ -10,4 +10,11 @@ public class ViewItemData {
 	public String text;
 	public String nextViewKey;
 	public KeyValue sendingData;
+
+	public ViewItemData(Bitmap image, String text, String nextViewKey, KeyValue sendingData) {
+		this.image = image;
+		this.text = text;
+		this.nextViewKey = nextViewKey;
+		this.sendingData = sendingData;
+	}
 }

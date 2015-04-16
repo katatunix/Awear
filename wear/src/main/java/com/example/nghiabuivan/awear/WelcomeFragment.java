@@ -27,8 +27,10 @@ public class WelcomeFragment extends BaseFragment {
 		m_textSyncResult = (TextView) getActivity().findViewById(R.id.text_sync_result);
 
 		//-----------------------------------------------------------------------------------
-		m_buttonEnter.setVisibility(View.GONE);
 		m_textSyncResult.setVisibility(View.GONE);
+		if (!m_viewDataSource.valid()) {
+			m_buttonEnter.setVisibility(View.GONE);
+		}
 
 		m_buttonSync.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -38,6 +40,12 @@ public class WelcomeFragment extends BaseFragment {
 				m_textSyncResult.setText("Please wait...");
 
 				m_viewDataSource.startLocalSync(m_notifier);
+			}
+		});
+
+		m_buttonEnter.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				m_fragmentTransitor.goToInApp();
 			}
 		});
 	}
@@ -50,6 +58,7 @@ public class WelcomeFragment extends BaseFragment {
 
 			// For sure, success == true also means m_viewDataSource.valid() == true
 			m_buttonEnter.setVisibility(success ? View.VISIBLE : View.GONE);
+			m_buttonSync.setVisibility(View.VISIBLE);
 		}
 	};
 }

@@ -2,37 +2,42 @@ package com.example.nghiabuivan.awear;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Stack;
+
 public class InAppFragment extends BaseFragment implements WearableListView.ClickListener {
 
 	private Context m_context;
-
 	private ListAdapter m_adapter;
-
-	private ViewData m_currentViewData;
-	private ViewData m_previousViewData;
+	WearableListView m_listView;
+	private Stack<ViewData> m_stack = new Stack<>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		WearableListView listView = (WearableListView) inflater.inflate(R.layout.list, container, false);
+		m_listView = (WearableListView) inflater.inflate(R.layout.list, container, false);
 
 		// ASSERT( m_viewDataSource.valid() );
-		m_currentViewData = m_viewDataSource.getRoot();
-		m_previousViewData = null;
+		ViewData root = m_viewDataSource.getRoot();
+		m_stack.clear();
+		m_stack.push(root);
 
 		m_context = container.getContext();
-		m_adapter = new ListAdapter(m_context, m_currentViewData);
+		m_adapter = new ListAdapter(m_context, root);
+		m_listView.setAdapter(m_adapter);
 
-		listView.setAdapter(m_adapter);
-		listView.setClickListener(this);
+		m_listView.setBackground( root.getBackground() );
 
-		return listView;
+		m_listView.setClickListener(this);
+
+		return m_listView;
 	}
 
 	@Override
@@ -41,15 +46,16 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 		ViewData nextViewData = null;
 
 		if (position == 0) { // BACK
-			if (m_previousViewData == null) {
+			if (m_stack.size() == 1) {
 				m_fragmentTransitor.goToWelcome();
 				return;
 
 			} else {
-				nextViewData = m_previousViewData;
+				m_stack.pop();
+				nextViewData = m_stack.lastElement();
 			}
 		} else {
-			ViewItemData vid = m_currentViewData.getItem(position);
+			ViewItemData vid = m_stack.lastElement().getItem(position);
 			if (vid.sendingData != null) {
 				Intent intent = new Intent(m_context, SendingDataActivity.class);
 				intent.putExtra("key", vid.sendingData.key);
@@ -60,14 +66,13 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 
 			} else if (vid.nextViewKey != null) {
 				nextViewData = m_viewDataSource.get(vid.nextViewKey);
+				m_stack.push(nextViewData);
 			}
 		}
 
 		if (nextViewData != null) {
-			m_previousViewData = m_currentViewData;
-			m_currentViewData = nextViewData;
-
-			m_adapter.setViewData(m_currentViewData);
+			m_listView.setBackground( nextViewData.getBackground() );
+			m_adapter.setViewData(nextViewData);
 			m_adapter.notifyDataSetChanged();
 		}
 	}

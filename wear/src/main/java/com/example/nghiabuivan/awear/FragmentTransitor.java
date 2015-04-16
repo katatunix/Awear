@@ -36,6 +36,7 @@ public class FragmentTransitor {
 
 		if (m_first) {
 			transaction.add(R.id.activity_main, fragment);
+			m_first = false;
 		} else {
 			transaction.replace(R.id.activity_main, fragment);
 		}

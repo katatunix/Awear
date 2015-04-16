@@ -1,5 +1,8 @@
 package com.example.nghiabuivan.awear;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+
 import java.util.ArrayList;
 
 /**
@@ -7,8 +10,14 @@ import java.util.ArrayList;
  */
 public class ViewData {
 
+	private BitmapDrawable m_background = null;
+	private ArrayList<ViewItemData> m_array = new ArrayList<>();
+
 	public ViewData() {
-		m_array = new ArrayList<>();
+	}
+
+	public ViewData(BitmapDrawable background) {
+		m_background = background;
 	}
 
 	public int getItemCount() {
@@ -23,5 +32,12 @@ public class ViewData {
 		m_array.add(vid);
 	}
 
-	private ArrayList<ViewItemData> m_array;
+	public void setBackground(BitmapDrawable background) {
+		m_background = background;
+	}
+
+	public BitmapDrawable getBackground() {
+		return m_background;
+	}
+
 }
