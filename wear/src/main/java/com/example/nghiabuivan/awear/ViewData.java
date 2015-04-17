@@ -5,9 +5,6 @@ import android.graphics.drawable.BitmapDrawable;
 
 import java.util.ArrayList;
 
-/**
- * Created by nghia.buivan on 4/16/2015.
- */
 public class ViewData {
 
 	private BitmapDrawable m_background = null;

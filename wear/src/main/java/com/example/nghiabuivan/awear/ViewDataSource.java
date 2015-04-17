@@ -13,8 +13,6 @@ public class ViewDataSource {
 
 	public ViewDataSource() {
 		m_viewDataList = new HashMap<>();
-
-
 	}
 
 	public void startLocalSync(Notifier notifier) {
@@ -22,7 +20,7 @@ public class ViewDataSource {
 
 		Bitmap dummyBitmap = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
 		for (int i = 0; i < 32; i++) for (int j = 0; j < 32; j++) {
-			dummyBitmap.setPixel(i, j, 0xFFFF0000);
+			dummyBitmap.setPixel(i, j, 0xFFFF00FF);
 		}
 
 		// Mock data
@@ -32,7 +30,7 @@ public class ViewDataSource {
 		// 1
 		vd = new ViewData();
 		vd.addItem(new ViewItemData(dummyBitmap, "Back", null, null));
-		vd.addItem(new ViewItemData(dummyBitmap, "Hello World 1", "view_loadout", null));
+		vd.addItem(new ViewItemData(dummyBitmap, "Cong hoa xa hoi chu nghia Viet Nam", "view_loadout", null));
 		vd.addItem(new ViewItemData(dummyBitmap, "Hello World 2", null, null));
 		vd.addItem(new ViewItemData(dummyBitmap, "Hello World 3", null, null));
 		vd.addItem(new ViewItemData(dummyBitmap, "Hello World 4", null, null));
