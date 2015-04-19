@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.nghiabuivan.awear.client.Notifier;
+
 public class WelcomeFragment extends BaseFragment {
 
 	private Button m_buttonEnter;

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.example.nghiabuivan.awear.client.Notifier;
+
 public class SendingDataActivity extends Activity implements Notifier {
 
 	private Handler m_handler;

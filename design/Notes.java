@@ -1,3 +1,5 @@
+CLIENT
+
 PUBLIC
 * Set local data dir path --> delegate to DataSource m_dataSource
 * Sync local with a callback when complete (SyncNotifier)
@@ -6,6 +8,7 @@ PUBLIC
 * In a view, we need: background: byte[], a list of items, items count
 * In an item, we need: name, image: byte[], nextViewKey, sendingKey, sendingValue
 * Provide a view from a given view key: return null if there's no such view
+* Send action(key, value) to server
 
 PRIVATE
 * When sync finish, data are stored in m_data: Map<String, byte[]>
@@ -14,7 +17,7 @@ PRIVATE
 * Method getData(key: String): byte[] will look at m_data first and then local dir, return null if no such key
 
 void buildViews() {
-	if (!processView(ROOT_VIEW_KEY)) {
+	if (!makeView(ROOT_VIEW_KEY)) {
 		m_data.clear(); // so hasRootView() will return false;
 	}
 }
