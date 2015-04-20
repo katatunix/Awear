@@ -127,7 +127,7 @@ public class CAwear {
 	private Runnable m_localSyncThread = new Runnable() {
 		@Override
 		public void run() {
-			// TODO: just test
+			// TODO: just test Thread.sleep()
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {

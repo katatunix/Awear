@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// TODO: local dir path
+		// TODO: get local dir path of the app
 		CAwear.createInstance("/sdcard/awear_dir/", this);
 
 		FragmentTransitor ft = new FragmentTransitor(getFragmentManager(), R.id.activity_main);
