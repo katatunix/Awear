@@ -2,13 +2,18 @@ package com.example.nghiabuivan.awear;
 
 import android.content.Context;
 import android.content.Intent;
+
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.wearable.view.WearableListView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.nghiabuivan.awear.client.CAwear;
+import com.example.nghiabuivan.awear.client.Item;
+import com.example.nghiabuivan.awear.client.View;
 
 import java.util.Stack;
 
@@ -17,23 +22,20 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 	private Context m_context;
 	private ListAdapter m_adapter;
 	WearableListView m_listView;
-	private Stack<ViewData> m_stack = new Stack<>();
+	private Stack<View> m_stack = new Stack<>();
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
+	public android.view.View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		m_listView = (WearableListView) inflater.inflate(R.layout.list, container, false);
 
-		// ASSERT( m_viewDataSource.valid() );
-		ViewData root = m_viewDataSource.getRoot();
-		m_stack.clear();
+		View root = CAwear.getInstance().getRootView();
 		m_stack.push(root);
 
 		m_context = container.getContext();
 		m_adapter = new ListAdapter(m_context, root);
 		m_listView.setAdapter(m_adapter);
 
-		m_listView.setBackground( root.getBackground() );
+		setBackground( root.getBackground() );
 
 		m_listView.setClickListener(this);
 
@@ -43,7 +45,7 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 	@Override
 	public void onClick(WearableListView.ViewHolder v) {
 		int position = (Integer) v.itemView.getTag();
-		ViewData nextViewData = null;
+		View nextView = null;
 
 		if (position == 0) { // BACK
 			if (m_stack.size() == 1) {
@@ -52,28 +54,39 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 
 			} else {
 				m_stack.pop();
-				nextViewData = m_stack.lastElement();
+				nextView = m_stack.lastElement();
 			}
 		} else {
-			ViewItemData vid = m_stack.lastElement().getItem(position);
-			if (vid.sendingData != null) {
+			Item item = m_stack.lastElement().getItem(position);
+
+			if (item.sendingKey != null) {
 				Intent intent = new Intent(m_context, SendingDataActivity.class);
-				intent.putExtra("key", vid.sendingData.key);
-				intent.putExtra("value", vid.sendingData.value);
+				intent.putExtra("key", item.sendingKey);
+				intent.putExtra("value", item.sendingValue);
 
 				startActivity(intent);
 				return;
 
-			} else if (vid.nextViewKey != null) {
-				nextViewData = m_viewDataSource.get(vid.nextViewKey);
-				m_stack.push(nextViewData);
+			} else if (item.nextViewKey != null) {
+				nextView = CAwear.getInstance().getView(item.nextViewKey);
+				m_stack.push(nextView);
 			}
 		}
 
-		if (nextViewData != null) {
-			m_listView.setBackground( nextViewData.getBackground() );
-			m_adapter.setViewData(nextViewData);
+		if (nextView != null) {
+			setBackground( nextView.getBackground() );
+			m_adapter.setView(nextView);
 			m_adapter.notifyDataSetChanged();
+		}
+	}
+
+	private void setBackground(byte[] background) {
+		if (background == null) {
+			m_listView.setBackground(null);
+		} else {
+			// TODO: cache these BitmapDrawable
+			Bitmap bmp = BitmapFactory.decodeByteArray(background, 0, background.length);
+			m_listView.setBackground( new BitmapDrawable(getResources(), bmp) );
 		}
 	}
 

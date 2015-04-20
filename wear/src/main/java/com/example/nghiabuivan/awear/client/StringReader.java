@@ -6,10 +6,11 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class StringReader {
+class StringReader {
+
 	String m_path;
 
-	StringReader(String path) {
+	public StringReader(String path) {
 		m_path = path;
 	}
 

@@ -11,7 +11,7 @@ public class ItemLayout extends LinearLayout implements WearableListView.OnCente
 
 	private final float m_fadedTextAlpha;
 	private ImageView m_image;
-	private TextView m_text;
+	private TextView m_name;
 
 	public ItemLayout(Context context) {
 		this(context, null);
@@ -30,18 +30,18 @@ public class ItemLayout extends LinearLayout implements WearableListView.OnCente
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 		m_image = (ImageView) findViewById(R.id.image);
-		m_text = (TextView) findViewById(R.id.name);
+		m_name = (TextView) findViewById(R.id.name);
 	}
 
 	@Override
 	public void onCenterPosition(boolean animate) {
 		m_image.setAlpha(1.0f);
-		m_text.setAlpha(1.0f);
+		m_name.setAlpha(1.0f);
 	}
 
 	@Override
 	public void onNonCenterPosition(boolean animate) {
 		m_image.setAlpha(m_fadedTextAlpha);
-		m_text.setAlpha(m_fadedTextAlpha);
+		m_name.setAlpha(m_fadedTextAlpha);
 	}
 }

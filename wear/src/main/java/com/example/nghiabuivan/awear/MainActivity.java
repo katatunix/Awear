@@ -6,6 +6,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
+import com.example.nghiabuivan.awear.client.CAwear;
+
 public class MainActivity extends Activity {
 
 	@Override
@@ -13,7 +15,22 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		FragmentTransitor ft = new FragmentTransitor(getFragmentManager());
+		// TODO: local dir path
+		CAwear.createInstance("/sdcard/awear_dir/", this);
+
+		FragmentTransitor ft = new FragmentTransitor(getFragmentManager(), R.id.activity_main);
 		ft.goToWelcome();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		CAwear.getInstance().connect();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		CAwear.getInstance().disconnect();
 	}
 }

@@ -1,27 +1,28 @@
 package com.example.nghiabuivan.awear;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.support.wearable.view.WearableListView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * Created by nghia.buivan on 4/15/2015.
- */
+import com.example.nghiabuivan.awear.client.Item;
+import com.example.nghiabuivan.awear.client.View;
+
 public class ListAdapter extends WearableListView.Adapter {
 
 	private final LayoutInflater m_inflater;
-	private ViewData m_viewData;
+	private View m_view;
 
-	public ListAdapter(Context context, ViewData vd) {
+	public ListAdapter(Context context, View view) {
 		m_inflater = LayoutInflater.from(context);
-		m_viewData = vd;
+		m_view = view;
 	}
 
-	public void setViewData(ViewData vd) {
-		m_viewData = vd;
+	public void setView(View view) {
+		m_view = view;
 	}
 
 	@Override
@@ -32,10 +33,14 @@ public class ListAdapter extends WearableListView.Adapter {
 
 	@Override
 	public void onBindViewHolder(WearableListView.ViewHolder holder, int position) {
-		ViewItemData vid = m_viewData.getItem(position);
+		Item item = m_view.getItem(position);
 
-		( (TextView) holder.itemView.findViewById(R.id.name) ).setText(vid.text);
-		( (ImageView) holder.itemView.findViewById(R.id.image) ).setImageBitmap(vid.image);
+		( (TextView) holder.itemView.findViewById(R.id.name) ).setText(item.name);
+		( (ImageView) holder.itemView.findViewById(R.id.image) ).setImageBitmap(
+				item.image == null ? null :
+						BitmapFactory.decodeByteArray(item.image, 0, item.image.length)
+
+		);
 
 		// Tag for this item, useful for onClick() event
 		holder.itemView.setTag(position);
@@ -43,6 +48,6 @@ public class ListAdapter extends WearableListView.Adapter {
 
 	@Override
 	public int getItemCount() {
-		return m_viewData.getItemCount();
+		return m_view.getItemCount();
 	}
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.example.nghiabuivan.awear.client.CAwear;
 import com.example.nghiabuivan.awear.client.Notifier;
 
 public class SendingDataActivity extends Activity implements Notifier {
@@ -15,7 +16,7 @@ public class SendingDataActivity extends Activity implements Notifier {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		// TODO
+		// TODO: setVisible
 //		sendingTextView.setVisible(true);
 //		resultTextView.setVisible(false);
 
@@ -23,7 +24,7 @@ public class SendingDataActivity extends Activity implements Notifier {
 		String sendingKey		= intent.getStringExtra("key");
 		String sendingValue		= intent.getStringExtra("value");
 
-		DataSender.getInstance().startSend(sendingKey, sendingValue, this);
+		CAwear.getInstance().sendAction(sendingKey, sendingValue, this);
 
 		m_handler = new MyHandler(this);
 	}
@@ -46,9 +47,9 @@ public class SendingDataActivity extends Activity implements Notifier {
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == 0) { // error
-				// Show error text: msg.obj TODO
+				// TODO: Show error text: msg.obj
 			} else if (msg.what == 1) { // success
-				// Show success text: msg.obj TODO
+				// TODO: Show success text: msg.obj
 			} else {
 				m_activity.finish();
 			}

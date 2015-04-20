@@ -31,9 +31,10 @@ android:layout_width="match_parent">
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="Sync Result"
-		android:id="@+id/text_sync_result"
-		android:layout_gravity="center_horizontal"/>
+		android:text="Sync Status"
+		android:id="@+id/text_sync_status"
+		android:layout_gravity="center_horizontal"
+		android:textColor="#ff0000ff"/>
 
 </LinearLayout>
 

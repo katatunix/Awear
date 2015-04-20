@@ -44,19 +44,19 @@ boolean processView(key: String) {
 }
 
 JSON {
-	title: "xxx",
+	backgroundImageKey: "xxx",
+	name: "xxx",
+	backImageKey: "xxx",
 	items: [
 		{
+			name: "xxx",
 			imageKey: "xxx",
-			text: "xxx",
 			nextViewKey: "xxx" // optional
-			sendingData: {
-				key: "xxx",
-				value: "xxx"
-			} // optional
+			sendingKey: "xxx"
+			sendingValue: "xxx"
 		}
-	],
-	backImageKey: "xxx"
+	]
+	
 }
 
 
