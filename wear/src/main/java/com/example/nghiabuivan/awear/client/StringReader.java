@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 public class StringReader {
 	String m_path;
 
-	public StringReader(String path) {
+	StringReader(String path) {
 		m_path = path;
 	}
 
