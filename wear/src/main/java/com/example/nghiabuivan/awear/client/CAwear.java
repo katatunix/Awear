@@ -18,9 +18,7 @@ public class CAwear {
 	// Singleton
 	private static CAwear s_instance = null;
 	public static CAwear createInstance(String localDirPath, Object context) {
-		if (s_instance == null) {
-			s_instance = new CAwear(localDirPath, context);
-		}
+		s_instance = new CAwear(localDirPath, context);
 		return s_instance;
 	}
 	public static CAwear getInstance() {

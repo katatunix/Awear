@@ -47,7 +47,9 @@ class GoogleMessenger implements
 
 	public void send(String key, String value, Notifier notifier) {
 		if (!isConnected() || m_currentNodeId == null) {
-			notifier.onComplete(false, "Not connected");
+			if (notifier != null) {
+				notifier.onComplete(false, "Not connected");
+			}
 			return;
 		}
 

@@ -7,6 +7,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.nghiabuivan.awear.client.CAwear;
+import com.example.nghiabuivan.awear.client.K;
 
 public class MainActivity extends Activity {
 
@@ -15,8 +16,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// TODO: get local dir path of the app
-		CAwear.createInstance("/sdcard/awear_dir/", this);
+		K.log("local dir path: " + getFilesDir().getAbsolutePath());
+		CAwear.createInstance(getFilesDir().getAbsolutePath() + '/', this);
 
 		FragmentTransitor ft = new FragmentTransitor(getFragmentManager(), R.id.activity_main);
 		ft.goToWelcome();

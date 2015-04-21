@@ -72,12 +72,16 @@ public class WelcomeFragment extends BaseFragment {
 		});
 
 		//-----------------------------------------------------------------------------------
-		m_buttonEnter.setVisibility(View.GONE);
-		m_buttonSync.setVisibility(View.GONE);
-		m_textSyncStatus.setText("Loading...");
+		if (CAwear.getInstance().hasRootView()) {
+			m_textSyncStatus.setVisibility(View.GONE);
+		} else {
+			m_buttonEnter.setVisibility(View.GONE);
+			m_buttonSync.setVisibility(View.GONE);
+			m_textSyncStatus.setText("Loading...");
 
-		m_isRemoteSync = false;
-		CAwear.getInstance().startLocalSync(m_notifier);
+			m_isRemoteSync = false;
+			CAwear.getInstance().startLocalSync(m_notifier);
+		}
 	}
 
 	private Notifier m_notifier = new Notifier() {

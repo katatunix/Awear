@@ -24,7 +24,8 @@ public class MainActivity extends ActionBarActivity implements ViewCreator, Acti
 
 		TextView textView = (TextView) findViewById(R.id.hello);
 
-		m_awear = new SAwear("/sdcard/awear_dir/", this);
+		K.log("local dir path: " + getFilesDir().getAbsolutePath());
+		m_awear = new SAwear(getFilesDir().getAbsolutePath() + '/', this);
 		m_awear.registerViewCreator(this);
 		m_awear.registerActionListener(this);
 	}
