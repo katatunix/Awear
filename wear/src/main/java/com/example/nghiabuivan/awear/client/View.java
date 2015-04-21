@@ -19,7 +19,7 @@ public class View {
 
 		Item item = new Item()
 				.setName(obj.getString("name"))
-				.setImage(dataSource.get(obj.getString("backImageKey")));
+				.setImage(dataSource.get(obj.getString("backIconImageKey")));
 		view.m_items.add(item);
 
 		JSONArray array = obj.getJSONArray("items");

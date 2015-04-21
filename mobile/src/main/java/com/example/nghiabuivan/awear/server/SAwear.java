@@ -11,8 +11,8 @@ public class SAwear {
 	private static final String START_SYNC_KEY = "start_sync";
 	private static final String FINISH_SYNC_KEY = "finish_sync";
 
-	public SAwear(String dir) {
-		m_messenger = new GoogleMessenger();
+	public SAwear(String dir, Object context) {
+		m_messenger = new GoogleMessenger(context);
 		m_pool = new ViewPool(dir, ROOT_VIEW_KEY);
 
 		ActionListener selfListener = new ActionListener() {

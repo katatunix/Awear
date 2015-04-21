@@ -9,7 +9,6 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
@@ -22,6 +21,8 @@ class GoogleMessenger implements
 	private CListener m_listener = null;
 	private GoogleApiClient m_googleClient;
 	private Notifier m_notifier = null;
+
+	private String m_currentNodeId = null;
 
 	public GoogleMessenger(Object context) {
 		m_googleClient = new GoogleApiClient.Builder((Context)context)
@@ -45,7 +46,7 @@ class GoogleMessenger implements
 	}
 
 	public void send(String key, String value, Notifier notifier) {
-		if (!isConnected()) {
+		if (!isConnected() || m_currentNodeId == null) {
 			notifier.onComplete(false, "Not connected");
 			return;
 		}
@@ -53,21 +54,15 @@ class GoogleMessenger implements
 		if (value == null) value = "";
 		byte[] data = value.getBytes();
 
-		NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(m_googleClient).await();
-		if (nodes.getNodes().size() <= 0) {
-			notifier.onComplete(false, "No connected nodes");
-			return;
-		}
-
 		m_notifier = notifier;
 
-		// TODO: send to a specific node
-		Node node = nodes.getNodes().get(0);
 		PendingResult<MessageApi.SendMessageResult> pendingResult = Wearable.MessageApi.sendMessage(
-				m_googleClient, node.getId(),
+				m_googleClient, m_currentNodeId,
 				key, data
 		);
 		pendingResult.setResultCallback(m_sendMessageResultCallback);
+
+		K.log("send: " + key + ", " + value + "; to: " + m_currentNodeId);
 	}
 
 	@Override
@@ -82,6 +77,10 @@ class GoogleMessenger implements
 	@Override
 	public void onConnected(Bundle bundle) {
 		Wearable.MessageApi.addListener(m_googleClient, this);
+
+		m_currentNodeId = null;
+		PendingResult<NodeApi.GetConnectedNodesResult> pendingResult = Wearable.NodeApi.getConnectedNodes(m_googleClient);
+		pendingResult.setResultCallback(m_getConnectedNodesResultCallback);
 	}
 
 	private ResultCallback<MessageApi.SendMessageResult> m_sendMessageResultCallback
@@ -91,9 +90,23 @@ class GoogleMessenger implements
 			if (m_notifier == null) return;
 
 			if (result.getStatus().isSuccess()) {
+				K.log("send success");
 				m_notifier.onComplete(true, "Success");
 			} else {
+				K.log("send failed");
 				m_notifier.onComplete(false, "Failed");
+			}
+		}
+	};
+
+	private ResultCallback<NodeApi.GetConnectedNodesResult> m_getConnectedNodesResultCallback
+			= new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+		@Override
+		public void onResult(NodeApi.GetConnectedNodesResult result) {
+			if (result.getNodes().size() > 0) {
+				// TODO: get a specific node
+				m_currentNodeId = result.getNodes().get(0).getId();
+				K.log("get a connected node: " + m_currentNodeId);
 			}
 		}
 	};
@@ -101,6 +114,7 @@ class GoogleMessenger implements
 	@Override
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener != null) {
+			K.log("onMessageReceived: " + me.getPath() + ", " + me.getData().length + "; from: " + me.getSourceNodeId());
 			m_listener.onReceived(me.getPath(), me.getData());
 		}
 	}

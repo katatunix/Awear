@@ -4,14 +4,57 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.example.nghiabuivan.awear.server.ActionListener;
+import com.example.nghiabuivan.awear.server.K;
+import com.example.nghiabuivan.awear.server.SAwear;
+import com.example.nghiabuivan.awear.server.View;
+import com.example.nghiabuivan.awear.server.ViewCreator;
+import com.example.nghiabuivan.awear.server.ViewPool;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ViewCreator, ActionListener {
+
+	private SAwear m_awear;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		TextView textView = (TextView) findViewById(R.id.hello);
+
+		m_awear = new SAwear("/sdcard/awear_dir/", this);
+		m_awear.registerViewCreator(this);
+		m_awear.registerActionListener(this);
+	}
+
+	@Override
+	public void createViews(ViewPool pool) {
+		View root = pool.createRootView();
+		root.setName("Main Menu");
+		root.addItem().setName("This is item 1");
+		root.addItem().setName("This is item 2");
+		root.addItem().setName("This is item 3");
+		root.addItem().setName("This is item 4");
+		root.addItem().setName("This is item 5");
+	}
+
+	@Override
+	public void onActionReceived(String key, String value, String nodeId) {
+		K.log("onActionReceived: " + key + ", " + value + "; from: " + nodeId);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		m_awear.connect();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		m_awear.disconnect();
 	}
 
 
@@ -36,4 +79,5 @@ public class MainActivity extends ActionBarActivity {
 
 		return super.onOptionsItemSelected(item);
 	}
+
 }

@@ -45,8 +45,8 @@ public class CAwear {
 			}
 		};
 		// TODO: MockMessenger
-		//m_messenger = new GoogleMessenger(context);
-		m_messenger = new MockMessenger();
+		m_messenger = new GoogleMessenger(context);
+		//m_messenger = new MockMessenger();
 		m_messenger.setReceiveListener(listener);
 	}
 

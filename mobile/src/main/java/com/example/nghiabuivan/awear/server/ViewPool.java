@@ -49,7 +49,14 @@ public class ViewPool {
 		if ( key == null || m_sentKeys.contains(key) || !m_views.containsKey(key) ) return;
 
 		View view = m_views.get(key);
-		sender.send(key, view.toJson(), targetNodeId);
+		String json;
+		try {
+			json = view.toJson();
+		} catch (Exception e) {
+			return;
+		}
+
+		sender.send(key, json, targetNodeId);
 		m_sentKeys.add(key);
 
 		checkAndSendImage( view.getBackgroundImageKey(), targetNodeId, sender );
