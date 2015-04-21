@@ -35,14 +35,13 @@ public class CAwear {
 				// TODO: timeout
 
 				if (key.equals(FINISH_SYNC_KEY)) {
-					// TODO: save to disk
+					m_dataSource.saveAllToLocalDir();
 					buildViewsAndNotify();
 				} else {
 					m_dataSource.put(key, value);
 				}
 			}
 		};
-		// TODO: MockMessenger
 		m_messenger = new GoogleMessenger(context);
 		//m_messenger = new MockMessenger();
 		m_messenger.setReceiveListener(listener);
@@ -125,12 +124,6 @@ public class CAwear {
 	private Runnable m_localSyncThread = new Runnable() {
 		@Override
 		public void run() {
-			// TODO: just test Thread.sleep()
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			buildViewsAndNotify();
 		}
 	};

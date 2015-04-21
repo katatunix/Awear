@@ -16,45 +16,61 @@ import com.example.nghiabuivan.awear.server.ViewPool;
 public class MainActivity extends ActionBarActivity implements ViewCreator, ActionListener {
 
 	private SAwear m_awear;
+	private TextView m_textView;
+	private String m_text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		TextView textView = (TextView) findViewById(R.id.hello);
+		m_textView = (TextView) findViewById(R.id.hello);
 
-		K.log("local dir path: " + getFilesDir().getAbsolutePath());
-		m_awear = new SAwear(getFilesDir().getAbsolutePath() + '/', this);
+		m_awear = new SAwear("/sdcard/awear_dir/", this);
 		m_awear.registerViewCreator(this);
 		m_awear.registerActionListener(this);
+
+		m_awear.connect();
 	}
 
 	@Override
 	public void createViews(ViewPool pool) {
 		View root = pool.createRootView();
-		root.setName("Main Menu");
-		root.addItem().setName("This is item 1");
-		root.addItem().setName("This is item 2");
-		root.addItem().setName("This is item 3");
-		root.addItem().setName("This is item 4");
-		root.addItem().setName("This is item 5");
+		root.setName("MC 5").setBackgroundImageKey("bg_default.png").setBackIconImageKey("back_icon.png");
+		root.addItem().setName("Events").setImageKey("icon.png").setNextViewKey("events");
+		root.addItem().setName("This is item 2").setImageKey("icon.png");
+		root.addItem().setName("This is item 3").setImageKey("icon.png");
+		root.addItem().setName("This is item 4").setImageKey("icon.png");
+		root.addItem().setName("This is item 5").setImageKey("icon.png");
+
+		View events = pool.createView("events");
+		events.setName("EVENTS").setBackgroundImageKey("bg_events.png").setBackIconImageKey("back_icon.png");
+		events.addItem().setName("Event 1").setImageKey("icon.png").setSendingKey("get_event").setSendingValue("event_1");
+		events.addItem().setName("Event 2").setImageKey("icon.png").setSendingKey("get_event").setSendingValue("event_2");
+		events.addItem().setName("Event 3").setImageKey("icon.png");
+		events.addItem().setName("Event 4").setImageKey("icon.png");
+		events.addItem().setName("Event 5").setImageKey("icon.png");
+		events.addItem().setName("Event 6").setImageKey("icon.png");
+		events.addItem().setName("Event 7").setImageKey("icon.png");
 	}
 
 	@Override
 	public void onActionReceived(String key, String value, String nodeId) {
-		K.log("onActionReceived: " + key + ", " + value + "; from: " + nodeId);
+		m_text = "onActionReceived: key=" + key + ", value=" + value + "; from: " + nodeId;
+		K.log(m_text);
+		runOnUiThread(m_run);
 	}
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		m_awear.connect();
-	}
+	private Runnable m_run = new Runnable() {
+		@Override
+		public void run() {
+			m_textView.setText(m_textView.getText() + "\n\n" + m_text);
+		}
+	};
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onDestroy() {
+		super.onDestroy();
 		m_awear.disconnect();
 	}
 

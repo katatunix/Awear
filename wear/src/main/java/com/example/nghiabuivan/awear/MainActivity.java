@@ -21,17 +21,13 @@ public class MainActivity extends Activity {
 
 		FragmentTransitor ft = new FragmentTransitor(getFragmentManager(), R.id.activity_main);
 		ft.goToWelcome();
-	}
 
-	@Override
-	protected void onStart() {
-		super.onStart();
 		CAwear.getInstance().connect();
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onDestroy() {
+		super.onDestroy();
 		CAwear.getInstance().disconnect();
 	}
 }

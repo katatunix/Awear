@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.TextView;
 
 import com.example.nghiabuivan.awear.client.CAwear;
 import com.example.nghiabuivan.awear.client.Notifier;
@@ -13,12 +14,16 @@ public class SendingDataActivity extends Activity implements Notifier {
 
 	private Handler m_handler;
 
+	private TextView m_textStatus;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.sending);
 
-		// TODO: setVisible
-//		sendingTextView.setVisible(true);
-//		resultTextView.setVisible(false);
+		m_textStatus = (TextView) findViewById(R.id.text_sending_status);
+
+		m_textStatus.setText("Sending...");
 
 		Intent intent = getIntent();
 		String sendingKey		= intent.getStringExtra("key");
@@ -26,38 +31,23 @@ public class SendingDataActivity extends Activity implements Notifier {
 
 		CAwear.getInstance().sendAction(sendingKey, sendingValue, this);
 
-		m_handler = new MyHandler(this);
+		m_handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				if (msg.what < 2) {
+					m_textStatus.setText((String)msg.obj);
+
+					// Wating for 3000 ms and then close activity
+					sendEmptyMessageDelayed(2, 3000);
+				} else {
+					finish();
+				}
+			}
+		};
 	}
 
 	public void onComplete(boolean success, String message) {
 		// In another thread
 		m_handler.obtainMessage(success ? 1 : 0, message).sendToTarget();
-	}
-
-	//====================================================================================================
-	//====================================================================================================
-
-	private static class MyHandler extends Handler {
-		private Activity m_activity;
-
-		public MyHandler(Activity activity) {
-			m_activity = activity;
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			if (msg.what == 0) { // error
-				// TODO: Show error text: msg.obj
-			} else if (msg.what == 1) { // success
-				// TODO: Show success text: msg.obj
-			} else {
-				m_activity.finish();
-			}
-
-			if (msg.what < 2) {
-				// Wating for 100 ms and then close activity
-				sendEmptyMessageDelayed(2, 100);
-			}
-		}
 	}
 }

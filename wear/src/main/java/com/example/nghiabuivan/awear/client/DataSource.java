@@ -2,6 +2,7 @@ package com.example.nghiabuivan.awear.client;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -34,6 +35,7 @@ class DataSource {
 				buffer = new byte[count];
 				fis.read(buffer);
 				m_map.put(key, buffer);
+				K.log("read file: " + f.getAbsolutePath() + ", data length: " + count);
 			}
 		} catch (IOException ignored) {
 			buffer = null;
@@ -52,4 +54,38 @@ class DataSource {
 		m_map.put(key, value);
 	}
 
+	public void saveAllToLocalDir() {
+		try {
+			emptyDir(new File(m_localDirPath));
+			for (String name : m_map.keySet()) {
+				saveFile(m_localDirPath + name, m_map.get(name));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void emptyDir(File dir) throws IOException {
+		String[] files = dir.list();
+
+		for (String f : files) {
+			File temp = new File(dir.getAbsolutePath() + "/" + f);
+			if (temp.isDirectory()) {
+				emptyDir(temp);
+				temp.delete();
+				K.log("delete file: " + f);
+			} else {
+				temp.delete();
+				K.log("delete folder: " + f);
+			}
+		}
+	}
+
+	private void saveFile(String name, byte[] data) throws IOException {
+		K.log("save file: " + name + ", data length: " + data.length);
+		FileOutputStream fos = new FileOutputStream(name);
+		fos.write(data);
+		fos.close();
+
+	}
 }
