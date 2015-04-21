@@ -73,10 +73,10 @@ class DataSource {
 			if (temp.isDirectory()) {
 				emptyDir(temp);
 				temp.delete();
-				K.log("delete file: " + f);
+				K.log("delete folder: " + f);
 			} else {
 				temp.delete();
-				K.log("delete folder: " + f);
+				K.log("delete file: " + f);
 			}
 		}
 	}
