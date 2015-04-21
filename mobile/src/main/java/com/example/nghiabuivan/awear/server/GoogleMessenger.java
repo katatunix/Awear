@@ -1,6 +1,7 @@
 package com.example.nghiabuivan.awear.server;
 
-public class GoogleMessenger implements Messenger {
+class GoogleMessenger implements Messenger {
+
 
 	@Override
 	public void connect() {
@@ -13,17 +14,12 @@ public class GoogleMessenger implements Messenger {
 	}
 
 	@Override
-	public void setTargetNodeId(String nodeId) {
+	public void send(String key, String value, String nodeId) {
 
 	}
 
 	@Override
-	public void send(String key, String value) {
-
-	}
-
-	@Override
-	public void send(String key, byte[] value) {
+	public void send(String key, byte[] value, String nodeId) {
 
 	}
 
@@ -31,5 +27,4 @@ public class GoogleMessenger implements Messenger {
 	public void setListener(ActionListener listener) {
 
 	}
-
 }
