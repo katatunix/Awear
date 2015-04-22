@@ -25,17 +25,17 @@ class DataSource {
 		if ( m_map.containsKey(key) ) return m_map.get(key);
 
 		byte[] buffer = null;
-		File f = new File(m_localDirPath + key);
 
+		String filePath = m_localDirPath + key;
 		FileInputStream fis = null;
 		try {
-			fis = new FileInputStream(f);
+			fis = new FileInputStream(filePath);
 			int count = fis.available();
 			if (count > 0) {
 				buffer = new byte[count];
 				fis.read(buffer);
 				m_map.put(key, buffer);
-				K.log("read file: " + f.getAbsolutePath() + ", data length: " + count);
+				K.log("read file: " + filePath + ", data length: " + count);
 			}
 		} catch (IOException ignored) {
 			buffer = null;
