@@ -17,7 +17,7 @@ class MockMessenger implements Messenger {
 	}
 
 	@Override
-	public void setReceiveListener(CListener listener) {
+	public void setReceiveListener(ClientListener listener) {
 
 	}
 }

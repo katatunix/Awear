@@ -6,12 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-class DataSource {
+class Storage {
 
 	private String m_localDirPath;
 	private HashMap<String, byte[]> m_map = new HashMap<>();
 
-	public DataSource(String localDirPath) {
+	public Storage(String localDirPath) {
 		m_localDirPath = localDirPath;
 	}
 
@@ -54,7 +54,7 @@ class DataSource {
 		m_map.put(key, value);
 	}
 
-	public void saveAllToLocalDir() {
+	public void flush() {
 		try {
 			emptyDir(new File(m_localDirPath));
 			for (String name : m_map.keySet()) {

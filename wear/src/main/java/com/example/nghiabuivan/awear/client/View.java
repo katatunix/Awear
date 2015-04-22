@@ -11,7 +11,7 @@ public class View {
 	private byte[] m_background;
 	private ArrayList<Item> m_items = new ArrayList<>();
 
-	static View createFromJson(String json, DataSource dataSource) throws JSONException {
+	static View createFromJson(String json, Storage dataSource) throws JSONException {
 		UnthrownJsonObject obj = new UnthrownJsonObject( new JSONObject(json) );
 
 		View view = new View();

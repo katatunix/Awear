@@ -1,5 +1,5 @@
 package com.example.nghiabuivan.awear.client;
 
-interface CListener {
+interface ClientListener {
 	public void onReceived(String key, byte[] value);
 }

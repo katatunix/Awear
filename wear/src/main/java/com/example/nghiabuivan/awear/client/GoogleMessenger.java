@@ -18,7 +18,7 @@ class GoogleMessenger implements
 		GoogleApiClient.OnConnectionFailedListener,
 		MessageApi.MessageListener {
 
-	private CListener m_listener = null;
+	private ClientListener m_listener = null;
 	private GoogleApiClient m_googleClient;
 	private Notifier m_notifier = null;
 
@@ -68,7 +68,7 @@ class GoogleMessenger implements
 	}
 
 	@Override
-	public void setReceiveListener(CListener listener) {
+	public void setReceiveListener(ClientListener listener) {
 		m_listener = listener;
 	}
 

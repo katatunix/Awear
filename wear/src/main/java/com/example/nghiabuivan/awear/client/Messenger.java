@@ -8,5 +8,5 @@ interface Messenger {
 
 	public void send(String key, String value, Notifier notifier);
 
-	public void setReceiveListener(CListener listener);
+	public void setReceiveListener(ClientListener listener);
 }

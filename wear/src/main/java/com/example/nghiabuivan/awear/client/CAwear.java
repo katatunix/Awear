@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class CAwear {
 
-	private DataSource m_dataSource;
+	private Storage m_dataSource;
 	private HashMap<String, View> m_views = new HashMap<>();
 	private Messenger m_messenger;
 
@@ -27,15 +27,15 @@ public class CAwear {
 	//===================================================================================================
 
 	private CAwear(String localDirPath, Object context) {
-		m_dataSource = new DataSource(localDirPath);
+		m_dataSource = new Storage(localDirPath);
 
-		CListener listener = new CListener() {
+		ClientListener listener = new ClientListener() {
 			@Override
 			public void onReceived(String key, byte[] value) {
 				// TODO: timeout
 
 				if (key.equals(FINISH_SYNC_KEY)) {
-					m_dataSource.saveAllToLocalDir();
+					m_dataSource.flush();
 					buildViewsAndNotify();
 				} else {
 					m_dataSource.put(key, value);
