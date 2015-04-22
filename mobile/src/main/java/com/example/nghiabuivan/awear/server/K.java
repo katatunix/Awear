@@ -4,6 +4,6 @@ import android.util.Log;
 
 public class K {
 	public static void log(String txt) {
-		Log.d("Nghia", txt);
+		Log.d("Awear", txt);
 	}
 }

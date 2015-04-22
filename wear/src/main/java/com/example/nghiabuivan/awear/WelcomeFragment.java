@@ -16,9 +16,16 @@ public class WelcomeFragment extends BaseFragment {
 
 	private Button m_buttonEnter;
 	private Button m_buttonSync;
+	private Button m_buttonCancelSync;
 	private TextView m_textSyncStatus;
-	private boolean m_isRemoteSync = false;
 
+	private enum State {
+		IDLE,
+		IN_LOCAL_SYNC,
+		IN_REMOTE_SYNC
+	}
+
+	private State m_state;
 	private Handler m_handler;
 
 	@Override
@@ -30,18 +37,23 @@ public class WelcomeFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		m_state = State.IDLE;
+
 		m_buttonEnter = (Button) getActivity().findViewById(R.id.button_enter);
 		m_buttonSync = (Button) getActivity().findViewById(R.id.button_sync);
+		m_buttonCancelSync = (Button) getActivity().findViewById(R.id.button_cancel_sync);
 		m_textSyncStatus = (TextView) getActivity().findViewById(R.id.text_sync_status);
 
 		m_handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
+				if (m_state == State.IDLE) return;
+
 				boolean success = msg.what != 0;
 
-				if (m_isRemoteSync) {
+				if (m_state == State.IN_REMOTE_SYNC) {
 					m_textSyncStatus.setVisibility(View.VISIBLE);
-					m_textSyncStatus.setText(success ? "Success" : "Error");
+					m_textSyncStatus.setText((String) msg.obj);
 				} else {
 					m_textSyncStatus.setVisibility(View.GONE);
 				}
@@ -49,25 +61,36 @@ public class WelcomeFragment extends BaseFragment {
 				// For sure, success == true also means CAwear.getInstance().hasRootView() == true
 				m_buttonEnter.setVisibility(success ? View.VISIBLE : View.GONE);
 				m_buttonSync.setVisibility(View.VISIBLE);
+				m_buttonCancelSync.setVisibility(View.GONE);
 			}
 		};
 
 		//-----------------------------------------------------------------------------------
+		m_buttonEnter.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				m_fragmentTransitor.goToInApp();
+			}
+		});
+
 		m_buttonSync.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				m_buttonEnter.setVisibility(View.GONE);
 				m_buttonSync.setVisibility(View.GONE);
+				m_buttonCancelSync.setVisibility(View.VISIBLE);
 				m_textSyncStatus.setVisibility(View.VISIBLE);
 				m_textSyncStatus.setText("Synching...");
 
-				m_isRemoteSync = true;
+				m_state = State.IN_REMOTE_SYNC;
 				CAwear.getInstance().startRemoteSync(m_notifier);
 			}
 		});
 
-		m_buttonEnter.setOnClickListener(new View.OnClickListener() {
+		m_buttonCancelSync.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				m_fragmentTransitor.goToInApp();
+				m_state = State.IDLE;
+				m_buttonSync.setVisibility(View.VISIBLE);
+				m_buttonCancelSync.setVisibility(View.GONE);
+				m_textSyncStatus.setVisibility(View.GONE);
 			}
 		});
 
@@ -79,7 +102,7 @@ public class WelcomeFragment extends BaseFragment {
 			m_buttonSync.setVisibility(View.GONE);
 			m_textSyncStatus.setText("Loading...");
 
-			m_isRemoteSync = false;
+			m_state = State.IN_LOCAL_SYNC;
 			CAwear.getInstance().startLocalSync(m_notifier);
 		}
 	}

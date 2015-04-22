@@ -35,7 +35,7 @@ public class SendingDataActivity extends Activity implements Notifier {
 			@Override
 			public void handleMessage(Message msg) {
 				if (msg.what < 2) {
-					m_textStatus.setText((String)msg.obj);
+					m_textStatus.setText((String) msg.obj);
 
 					// Wating for 3000 ms and then close activity
 					sendEmptyMessageDelayed(2, 3000);
