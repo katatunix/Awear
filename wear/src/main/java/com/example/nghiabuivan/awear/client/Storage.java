@@ -10,6 +10,7 @@ class Storage {
 
 	private String m_localDirPath;
 	private HashMap<String, byte[]> m_map = new HashMap<>();
+	private boolean m_hasNewData = false;
 
 	public Storage(String localDirPath) {
 		m_localDirPath = localDirPath;
@@ -52,9 +53,11 @@ class Storage {
 
 	public void put(String key, byte[] value) {
 		m_map.put(key, value);
+		m_hasNewData = true;
 	}
 
 	public void flush() {
+		if (!m_hasNewData) return;
 		try {
 			emptyDir(new File(m_localDirPath));
 			for (String name : m_map.keySet()) {

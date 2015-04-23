@@ -88,6 +88,7 @@ public class WelcomeFragment extends BaseFragment {
 		m_buttonCancelSync.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				m_state = State.IDLE;
+				m_buttonEnter.setVisibility(View.GONE);
 				m_buttonSync.setVisibility(View.VISIBLE);
 				m_buttonCancelSync.setVisibility(View.GONE);
 				m_textSyncStatus.setVisibility(View.GONE);

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class CAwear {
 
-	private Storage m_dataSource;
+	private Storage m_storage;
 	private HashMap<String, View> m_views = new HashMap<>();
 	private Messenger m_messenger;
 
@@ -27,18 +27,16 @@ public class CAwear {
 	//===================================================================================================
 
 	private CAwear(String localDirPath, Object context) {
-		m_dataSource = new Storage(localDirPath);
+		m_storage = new Storage(localDirPath);
 
 		ClientListener listener = new ClientListener() {
 			@Override
 			public void onReceived(String key, byte[] value) {
 				// TODO: timeout
-
 				if (key.equals(FINISH_SYNC_KEY)) {
-					m_dataSource.flush();
 					buildViewsAndNotify();
 				} else {
-					m_dataSource.put(key, value);
+					m_storage.put(key, value);
 				}
 			}
 		};
@@ -53,6 +51,7 @@ public class CAwear {
 
 	public void disconnect() {
 		m_messenger.disconnect();
+		m_storage.flush();
 	}
 
 	public void startLocalSync(Notifier notifier) {
@@ -97,12 +96,12 @@ public class CAwear {
 
 	private boolean makeView(String key) {
 		// Sure: hasView(key) == false (this view has not been made)
-		if (!m_dataSource.hasKey(key)) return false;
+		if (!m_storage.hasKey(key)) return false;
 
-		String json = new String( m_dataSource.get(key) );
+		String json = new String( m_storage.get(key) );
 		View view;
 		try {
-			view = View.createFromJson(json, m_dataSource);
+			view = View.createFromJson(json, m_storage);
 		} catch (Exception e) {
 			return false;
 		}

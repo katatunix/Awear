@@ -24,8 +24,8 @@ public class SAwear {
 						m_creator.createViews(m_pool);
 					}
 
-					// TODO: cache this thread???
-					new SendingThread(m_pool, nodeId, m_messenger, FINISH_SYNC_KEY).start();
+					m_pool.sendViews(nodeId, m_messenger); // slow and block
+					m_messenger.send(FINISH_SYNC_KEY, "", nodeId);
 
 				} else if (m_userListener != null) {
 					m_userListener.onActionReceived(key, value, nodeId);
