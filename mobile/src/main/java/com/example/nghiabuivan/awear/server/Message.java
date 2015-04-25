@@ -1,6 +1,6 @@
 package com.example.nghiabuivan.awear.server;
 
-class Message {
+public class Message {
 	private String m_key = null;
 	private byte[] m_data = null;
 

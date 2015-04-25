@@ -77,7 +77,7 @@ public class CAwear {
 						.setKey(START_SYNC_KEY)
 						.setHeaderAsInt(m_sessionId)
 						.build(),
-				notifier
+				null
 		);
 	}
 

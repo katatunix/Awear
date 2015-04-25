@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.example.nghiabuivan.awear.server.ActionListener;
-import com.example.nghiabuivan.awear.server.K;
+import com.example.nghiabuivan.awear.server.Message;
 import com.example.nghiabuivan.awear.server.SAwear;
 import com.example.nghiabuivan.awear.server.View;
 import com.example.nghiabuivan.awear.server.ViewCreator;
@@ -55,9 +55,8 @@ public class MainActivity extends ActionBarActivity implements ViewCreator, Acti
 	}
 
 	@Override
-	public void onActionReceived(String key, String value, String nodeId) {
-		m_text = "onActionReceived: key=" + key + ", value=" + value + "; from: " + nodeId;
-		K.log(m_text);
+	public void onActionReceived(Message msg, String nodeId) {
+		m_text = "onActionReceived: key=" + msg.getKey() + ", length=" + msg.getData().length + "; from: " + nodeId;
 		runOnUiThread(m_run);
 	}
 
