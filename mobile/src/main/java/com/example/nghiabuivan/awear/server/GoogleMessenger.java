@@ -45,15 +45,9 @@ class GoogleMessenger implements
 	}
 
 	@Override
-	public void send(String key, String value, String nodeId) {
-		Log.d(TAG, "send string: " + key + ", " + value + "; to: " + nodeId);
-		send(key, value.getBytes(), nodeId);
-	}
-
-	@Override
-	public void send(String key, byte[] value, String nodeId) {
-		Log.d(TAG, "send bytes: " + key + ", " + value.length + "; to: " + nodeId);
-		Wearable.MessageApi.sendMessage(m_googleClient, nodeId, key, value).await();
+	public void send(Message msg, String nodeId) {
+		Log.d(TAG, "send: " + msg.getKey() + ", " + msg.getData().length + "; to: " + nodeId);
+		Wearable.MessageApi.sendMessage(m_googleClient, nodeId, msg.getKey(), msg.getData()).await();
 	}
 
 	@Override
@@ -74,9 +68,8 @@ class GoogleMessenger implements
 	@Override
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener != null) {
-			String value = new String(me.getData());
-			Log.d(TAG, "onMessageReceived: " + me.getPath() + ", " + value + "; from: " + me.getSourceNodeId());
-			m_listener.onActionReceived( me.getPath(), value, me.getSourceNodeId() );
+			Log.d(TAG, "onMessageReceived: " + me.getPath() + ", length: " + me.getData().length + "; from: " + me.getSourceNodeId());
+			m_listener.onActionReceived( new Message(me.getPath(), me.getData()), me.getSourceNodeId() );
 		}
 	}
 

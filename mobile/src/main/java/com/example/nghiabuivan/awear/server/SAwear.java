@@ -9,6 +9,7 @@ public class SAwear {
 
 	private static final String ROOT_VIEW_KEY = "view";
 	private static final String START_SYNC_KEY = "start_sync";
+	private static final String CANCEL_SYNC_KEY = "start_sync";
 	private static final String FINISH_SYNC_KEY = "finish_sync";
 
 	public SAwear(String dir, Object context) {
@@ -17,18 +18,32 @@ public class SAwear {
 
 		ActionListener selfListener = new ActionListener() {
 			@Override
-			public void onActionReceived(String key, String value, String nodeId) {
+			public void onActionReceived(Message msg, String nodeId) {
+				int sessionId;
+				String key = msg.getKey();
+
 				if (key.equals(START_SYNC_KEY)) {
+					try { sessionId = msg.getHeaderAsInt(); } catch (Exception e) { return; }
+
 					m_pool.clearViews();
 					if (m_creator != null) {
 						m_creator.createViews(m_pool);
 					}
 
-					m_pool.sendViews(nodeId, m_messenger); // slow and block
-					m_messenger.send(FINISH_SYNC_KEY, "", nodeId);
+					m_pool.sendViews(nodeId, sessionId, m_messenger); // slow and block
+					m_messenger.send(
+							new Message.Builder()
+									.setKey(FINISH_SYNC_KEY)
+									.setHeaderAsInt(sessionId)
+									.build(),
+							nodeId
+					);
 
+				} else if (key.equals(CANCEL_SYNC_KEY)) {
+					//try { sessionId = msg.getHeaderAsInt(); } catch (Exception e) { return; }
+					// TODO: CANCEL_SYNC_KEY
 				} else if (m_userListener != null) {
-					m_userListener.onActionReceived(key, value, nodeId);
+					m_userListener.onActionReceived(msg, nodeId);
 				}
 			}
 		};

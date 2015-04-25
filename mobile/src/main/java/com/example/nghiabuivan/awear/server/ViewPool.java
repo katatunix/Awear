@@ -37,15 +37,15 @@ public class ViewPool {
 		m_views.clear();
 	}
 
-	void sendViews(String targetNodeId, Messenger sender) {
+	void sendViews(String nodeId, int sessionId, Messenger sender) {
 		m_sentKeys.clear();
-		sendView(m_rootViewKey, targetNodeId, sender);
+		sendView(m_rootViewKey, nodeId, sessionId, sender);
 	}
 
 	//====================================================================================================
 	//====================================================================================================
 
-	private void sendView(String key, String targetNodeId, Messenger sender) {
+	private void sendView(String key, String nodeId, int sessionId, Messenger sender) {
 		if ( key == null || m_sentKeys.contains(key) || !m_views.containsKey(key) ) return;
 
 		View view = m_views.get(key);
@@ -56,24 +56,38 @@ public class ViewPool {
 			return;
 		}
 
-		sender.send(key, json, targetNodeId);
+		sender.send(
+				new Message.Builder()
+						.setKey(key)
+						.setHeaderAsInt(sessionId)
+						.setBody( new Bytes(json.getBytes()) )
+						.build()
+				, nodeId
+		);
 		m_sentKeys.add(key);
 
-		checkAndSendImage( view.getBackgroundImageKey(), targetNodeId, sender );
-		checkAndSendImage( view.getBackIconImageKey(), targetNodeId, sender) ;
+		checkAndSendImage( view.getBackgroundImageKey(), nodeId, sessionId, sender );
+		checkAndSendImage( view.getBackIconImageKey(), nodeId, sessionId, sender );
 
 		int count = view.getItemCount();
 		for (int i = 0; i < count; i++) {
-			checkAndSendImage( view.getItemImageKey(i), targetNodeId, sender) ;
-			sendView( view.getItemNextViewKey(i), targetNodeId, sender) ;
+			checkAndSendImage( view.getItemImageKey(i), nodeId, sessionId, sender) ;
+			sendView( view.getItemNextViewKey(i), nodeId, sessionId, sender );
 		}
 	}
 
-	private void checkAndSendImage(String imageKey, String targetNodeId, Messenger sender) {
+	private void checkAndSendImage(String imageKey, String nodeId, int sessionId, Messenger sender) {
 		if ( imageKey != null && !m_sentKeys.contains(imageKey) ) {
 			byte[] data = getImage(imageKey);
 			if (data != null) {
-				sender.send(imageKey, data, targetNodeId);
+				sender.send(
+						new Message.Builder()
+								.setKey(imageKey)
+								.setHeaderAsInt(sessionId)
+								.setBody( new Bytes(data) )
+								.build(),
+						nodeId
+				);
 				m_sentKeys.add(imageKey);
 			}
 		}
