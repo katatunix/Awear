@@ -48,8 +48,6 @@ public class CAwear {
 					return;
 				}
 
-
-
 				String key = msg.getKey();
 				if (key.equals(FINISH_SYNC_KEY)) {
 					m_storage.flush();
