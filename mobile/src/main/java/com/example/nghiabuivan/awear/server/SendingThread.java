@@ -49,8 +49,9 @@ class SendingThread extends Thread {
 
 	@Override
 	public void run() {
+		setRunning(true);
+
 		synchronized (SendingThread.class) {
-			setRunning(true);
 
 			m_pool.clearViews();
 			if (m_creator != null) {
@@ -78,9 +79,9 @@ class SendingThread extends Thread {
 			);
 
 			Log.d(TAG, "Send FINISH_SYNC with sessionId = " + m_sessionId);
-
-			setRunning(false);
 		}
+
+		setRunning(false);
 	}
 
 }

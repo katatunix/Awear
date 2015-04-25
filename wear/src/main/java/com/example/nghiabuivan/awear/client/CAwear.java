@@ -41,10 +41,14 @@ public class CAwear {
 				// TODO: timeout
 
 				try {
-					if (msg.getHeaderAsInt() != m_sessionId) return;
+					int sid = msg.getHeaderAsInt();
+					Log.d(TAG, "received: sid = " + sid + ", m_sessionId = " + m_sessionId);
+					if (sid != m_sessionId) return;
 				} catch (Exception e) {
 					return;
 				}
+
+
 
 				String key = msg.getKey();
 				if (key.equals(FINISH_SYNC_KEY)) {

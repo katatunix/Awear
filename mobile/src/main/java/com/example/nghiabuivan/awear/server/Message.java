@@ -31,10 +31,10 @@ public class Message {
 
 	public int getHeaderAsInt() throws Exception {
 		if (!isValid() || m_data[0] != s_sizeofint) throw new Exception();
-		return (int) m_data[4]
-				| ( (int) m_data[3] << 8 )
-				| ( (int) m_data[2] << 16 )
-				| ( (int) m_data[1] << 24 );
+		return ( m_data[4] & 0xFF )
+				| ( (m_data[3] & 0xFF) << 8 )
+				| ( (m_data[2] & 0xFF) << 16 )
+				| ( (m_data[1] & 0xFF) << 24 );
 	}
 
 	public Bytes getBody() {

@@ -3,6 +3,8 @@ package com.example.nghiabuivan.awear.server;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class SAwear {
 
@@ -73,9 +75,11 @@ public class SAwear {
 	}
 
 	private void cleanSendingThreads() {
-		for (Integer key : m_sendingThreads.keySet()) {
-			if ( !m_sendingThreads.get(key).isRunning() ) {
-				m_sendingThreads.remove(key);
+		Iterator<Map.Entry<Integer, SendingThread>> iter = m_sendingThreads.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<Integer, SendingThread> entry = iter.next();
+			if ( !entry.getValue().isRunning() ) {
+				iter.remove();
 			}
 		}
 	}
