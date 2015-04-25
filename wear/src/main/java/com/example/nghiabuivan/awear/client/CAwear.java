@@ -1,5 +1,7 @@
 package com.example.nghiabuivan.awear.client;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 public class CAwear {
@@ -11,9 +13,11 @@ public class CAwear {
 	private int m_sessionId = 0;
 	private int m_sessionIdCounter = 0;
 
+	private static final String TAG = "Awear";
+
 	private static final String ROOT_VIEW_KEY = "view";
 	private static final String START_SYNC_KEY = "start_sync";
-	private static final String CANCEL_SYNC_KEY = "start_sync";
+	private static final String CANCEL_SYNC_KEY = "cancel_sync";
 	private static final String FINISH_SYNC_KEY = "finish_sync";
 
 	//===================================================================================================
@@ -72,6 +76,7 @@ public class CAwear {
 	public boolean startRemoteSync(Notifier notifier) {
 		m_notifier = notifier;
 		m_sessionId = getNewSessionId();
+		Log.d(TAG, "New sessionId: " + m_sessionId);
 		return m_messenger.send(
 				new Message.Builder()
 						.setKey(START_SYNC_KEY)
