@@ -81,7 +81,9 @@ public class WelcomeFragment extends BaseFragment {
 				m_textSyncStatus.setText("Synching...");
 
 				m_state = State.IN_REMOTE_SYNC;
-				CAwear.getInstance().startRemoteSync(m_notifier);
+				if ( !CAwear.getInstance().startRemoteSync(m_notifier) ) {
+					// TODO: sending is failed due to no connected node
+				}
 			}
 		});
 
@@ -92,6 +94,8 @@ public class WelcomeFragment extends BaseFragment {
 				m_buttonSync.setVisibility(View.VISIBLE);
 				m_buttonCancelSync.setVisibility(View.GONE);
 				m_textSyncStatus.setVisibility(View.GONE);
+
+				CAwear.getInstance().cancelRemoteSync();
 			}
 		});
 

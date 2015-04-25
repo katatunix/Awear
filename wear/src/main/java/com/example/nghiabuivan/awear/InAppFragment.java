@@ -11,6 +11,7 @@ import android.support.wearable.view.WearableListView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.example.nghiabuivan.awear.client.Bytes;
 import com.example.nghiabuivan.awear.client.CAwear;
 import com.example.nghiabuivan.awear.client.Item;
 import com.example.nghiabuivan.awear.client.View;
@@ -80,12 +81,12 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 		}
 	}
 
-	private void setBackground(byte[] background) {
-		if (background == null) {
+	private void setBackground(Bytes bgr) {
+		if (bgr == null || bgr.data == null || bgr.length <= 0) {
 			m_listView.setBackground(null);
 		} else {
 			// TODO: cache these BitmapDrawable
-			Bitmap bmp = BitmapFactory.decodeByteArray(background, 0, background.length);
+			Bitmap bmp = BitmapFactory.decodeByteArray(bgr.data, bgr.offset, bgr.length);
 			m_listView.setBackground( new BitmapDrawable(getResources(), bmp) );
 		}
 	}

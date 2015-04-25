@@ -1,5 +1,7 @@
 package com.example.nghiabuivan.awear.client;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,7 +11,7 @@ import java.util.HashMap;
 class Storage {
 
 	private String m_localDirPath;
-	private HashMap<String, byte[]> m_map = new HashMap<>();
+	private HashMap<String, Bytes> m_map = new HashMap<>();
 	private boolean m_hasNewData = false;
 
 	public Storage(String localDirPath) {
@@ -22,10 +24,10 @@ class Storage {
 		return f.exists();
 	}
 
-	public byte[] get(String key) {
+	public Bytes get(String key) {
 		if ( m_map.containsKey(key) ) return m_map.get(key);
 
-		byte[] buffer = null;
+		Bytes ret = null;
 
 		String filePath = m_localDirPath + key;
 		FileInputStream fis = null;
@@ -33,13 +35,13 @@ class Storage {
 			fis = new FileInputStream(filePath);
 			int count = fis.available();
 			if (count > 0) {
-				buffer = new byte[count];
+				byte[] buffer = new byte[count];
 				fis.read(buffer);
-				m_map.put(key, buffer);
-				K.log("read file: " + filePath + ", data length: " + count);
+				m_map.put(key, ret = new Bytes(buffer));
+				Log.d("Awear", "read file: " + filePath + ", data length: " + count);
 			}
 		} catch (IOException ignored) {
-			buffer = null;
+			ret = null;
 		} finally {
 			if (fis != null) try {
 				fis.close();
@@ -48,10 +50,10 @@ class Storage {
 			}
 		}
 
-		return buffer;
+		return ret;
 	}
 
-	public void put(String key, byte[] value) {
+	public void put(String key, Bytes value) {
 		m_map.put(key, value);
 		m_hasNewData = true;
 	}
@@ -76,19 +78,19 @@ class Storage {
 			if (temp.isDirectory()) {
 				emptyDir(temp);
 				temp.delete();
-				K.log("delete folder: " + f);
+				Log.d("Awear", "delete folder: " + f);
 			} else {
 				temp.delete();
-				K.log("delete file: " + f);
+				Log.d("Awear", "delete file: " + f);
 			}
 		}
 	}
 
-	private void saveFile(String name, byte[] data) throws IOException {
-		K.log("save file: " + name + ", data length: " + data.length);
+	private void saveFile(String name, Bytes bytes) throws IOException {
+		Log.d("Awear", "save file: " + name + ", data length: " + bytes.length);
 		FileOutputStream fos = new FileOutputStream(name);
-		fos.write(data);
+		fos.write(bytes.data, bytes.offset, bytes.length);
 		fos.close();
-
 	}
+
 }

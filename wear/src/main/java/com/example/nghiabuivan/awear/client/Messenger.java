@@ -6,7 +6,7 @@ interface Messenger {
 
 	public void disconnect();
 
-	public void send(String key, String value, Notifier notifier);
+	public boolean send(Message msg, Notifier notifier);
 
 	public void setReceiveListener(ClientListener listener);
 }

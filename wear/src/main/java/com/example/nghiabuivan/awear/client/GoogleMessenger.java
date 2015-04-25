@@ -2,6 +2,7 @@ package com.example.nghiabuivan.awear.client;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -45,26 +46,24 @@ class GoogleMessenger implements
 		}
 	}
 
-	public void send(String key, String value, Notifier notifier) {
+	public boolean send(Message msg, Notifier notifier) {
 		if (!isConnected() || m_currentNodeId == null) {
 			if (notifier != null) {
 				notifier.onComplete(false, "Not connected");
 			}
-			return;
+			return false;
 		}
-
-		if (value == null) value = "";
-		byte[] data = value.getBytes();
 
 		m_notifier = notifier;
 
 		PendingResult<MessageApi.SendMessageResult> pendingResult = Wearable.MessageApi.sendMessage(
 				m_googleClient, m_currentNodeId,
-				key, data
+				msg.getKey(), msg.getData()
 		);
 		pendingResult.setResultCallback(m_sendMessageResultCallback);
 
-		K.log("send: " + key + ", " + value + "; to: " + m_currentNodeId);
+		Log.d("AWear", "send: " + msg.getKey() + ", length: " + msg.getData().length + "; to: " + m_currentNodeId);
+		return true;
 	}
 
 	@Override
@@ -92,10 +91,10 @@ class GoogleMessenger implements
 			if (m_notifier == null) return;
 
 			if (result.getStatus().isSuccess()) {
-				K.log("send success");
+				Log.d("AWear", "send success");
 				m_notifier.onComplete(true, "Success");
 			} else {
-				K.log("send failed");
+				Log.d("AWear", "send failed");
 				m_notifier.onComplete(false, "Failed");
 			}
 		}
@@ -108,17 +107,38 @@ class GoogleMessenger implements
 			if (result.getNodes().size() > 0) {
 				// TODO: get a specific node
 				m_currentNodeId = result.getNodes().get(0).getId();
-				K.log("get a connected node: " + m_currentNodeId);
+				Log.d("AWear", "get a connected node: " + m_currentNodeId);
 			}
 		}
 	};
 
 	@Override
 	public void onMessageReceived(MessageEvent me) {
-		if (m_listener != null) {
-			K.log("onMessageReceived: " + me.getPath() + ", " + me.getData().length + "; from: " + me.getSourceNodeId());
-			m_listener.onReceived(me.getPath(), me.getData());
-		}
+		if (m_listener == null) return;
+		Log.d("AWear", "onMessageReceived: " + me.getPath() + ", " + me.getData().length + "; from: " + me.getSourceNodeId());
+
+		/**
+		 * Structure of a message:
+		 * 		First byte is the length of the header
+		 * 		The header itself
+		 *		The body
+		 *
+		 */
+
+		byte[] data = me.getData();
+		final int offset = 1;
+		if (data.length < offset) return;
+
+		int headerLength = data[0];
+		if (offset + headerLength > data.length) return;
+
+		Message msg = new Message.Builder()
+				.setKey( me.getPath() )
+				.setHeader( new Bytes(data, offset, headerLength) )
+				.setBody( new Bytes(data, offset + headerLength) )
+				.build();
+
+		m_listener.onReceived(msg);
 	}
 
 	@Override

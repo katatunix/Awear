@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.nghiabuivan.awear.client.Bytes;
 import com.example.nghiabuivan.awear.client.Item;
 import com.example.nghiabuivan.awear.client.View;
 
@@ -34,15 +35,16 @@ public class ListAdapter extends WearableListView.Adapter {
 	@Override
 	public void onBindViewHolder(WearableListView.ViewHolder holder, int position) {
 		Item item = m_view.getItem(position);
+		Bytes img = item.image;
 
 		( (TextView) holder.itemView.findViewById(R.id.name) ).setText(item.name);
 		( (ImageView) holder.itemView.findViewById(R.id.image) ).setImageBitmap(
-				item.image == null ? null :
-						BitmapFactory.decodeByteArray(item.image, 0, item.image.length)
+				img == null || img.data == null || img.length <= 0 ? null :
+						BitmapFactory.decodeByteArray(img.data, img.offset, img.length)
 
 		);
 
-		// Tag for this item, useful for onClick() event
+		// Tag for this item, useful for the onClick() event
 		holder.itemView.setTag(position);
 	}
 

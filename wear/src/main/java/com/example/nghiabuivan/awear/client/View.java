@@ -8,18 +8,18 @@ import java.util.ArrayList;
 
 public class View {
 
-	private byte[] m_background;
+	private Bytes m_background;
 	private ArrayList<Item> m_items = new ArrayList<>();
 
-	static View createFromJson(String json, Storage dataSource) throws JSONException {
+	static View createFromJson(String json, Storage storage) throws JSONException {
 		UnthrownJsonObject obj = new UnthrownJsonObject( new JSONObject(json) );
 
 		View view = new View();
-		view.m_background = dataSource.get( obj.getString("backgroundImageKey") );
+		view.m_background = storage.get( obj.getString("backgroundImageKey") );
 
 		Item item = new Item()
 				.setName(obj.getString("name"))
-				.setImage(dataSource.get(obj.getString("backIconImageKey")));
+				.setImage(storage.get(obj.getString("backIconImageKey")));
 		view.m_items.add(item);
 
 		JSONArray array = obj.getJSONArray("items");
@@ -30,7 +30,7 @@ public class View {
 
 				item = new Item()
 						.setName( obj.getString("name") )
-						.setImage( dataSource.get( obj.getString("imageKey") ) )
+						.setImage( storage.get( obj.getString("imageKey") ) )
 						.setNextViewKey( obj.getString("nextViewKey") )
 						.setSendingKey( obj.getString("sendingKey") )
 						.setSendingValue( obj.getString("sendingValue") );
@@ -45,7 +45,7 @@ public class View {
 
 	}
 
-	public byte[] getBackground() {
+	public Bytes getBackground() {
 		return m_background;
 	}
 

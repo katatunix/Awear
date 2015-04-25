@@ -6,12 +6,14 @@ public class CAwear {
 
 	private Storage m_storage;
 	private HashMap<String, View> m_views = new HashMap<>();
-	private Messenger m_messenger;
-
+	private final Messenger m_messenger;
 	private Notifier m_notifier = null;
+	private int m_sessionId = 0;
+	private int m_sessionIdCounter = 0;
 
 	private static final String ROOT_VIEW_KEY = "view";
 	private static final String START_SYNC_KEY = "start_sync";
+	private static final String CANCEL_SYNC_KEY = "start_sync";
 	private static final String FINISH_SYNC_KEY = "finish_sync";
 
 	//===================================================================================================
@@ -31,17 +33,26 @@ public class CAwear {
 
 		ClientListener listener = new ClientListener() {
 			@Override
-			public void onReceived(String key, byte[] value) {
+			public void onReceived(Message msg) {
 				// TODO: timeout
+
+				try {
+					if (msg.getHeaderAsInt() != m_sessionId) return;
+				} catch (Exception e) {
+					return;
+				}
+
+				String key = msg.getKey();
 				if (key.equals(FINISH_SYNC_KEY)) {
+					m_storage.flush();
 					buildViewsAndNotify();
 				} else {
-					m_storage.put(key, value);
+					m_storage.put(key, msg.getBody());
 				}
 			}
 		};
+
 		m_messenger = new GoogleMessenger(context);
-		//m_messenger = new MockMessenger();
 		m_messenger.setReceiveListener(listener);
 	}
 
@@ -51,7 +62,6 @@ public class CAwear {
 
 	public void disconnect() {
 		m_messenger.disconnect();
-		m_storage.flush();
 	}
 
 	public void startLocalSync(Notifier notifier) {
@@ -59,9 +69,26 @@ public class CAwear {
 		new Thread(m_localSyncThread).start();
 	}
 
-	public void startRemoteSync(Notifier notifier) {
+	public boolean startRemoteSync(Notifier notifier) {
 		m_notifier = notifier;
-		sendAction(START_SYNC_KEY, "", null);
+		m_sessionId = getNewSessionId();
+		return m_messenger.send(
+				new Message.Builder()
+						.setKey(START_SYNC_KEY)
+						.setHeaderAsInt(m_sessionId)
+						.build(),
+				notifier
+		);
+	}
+
+	public void cancelRemoteSync() {
+		m_sessionId = 0;
+		m_messenger.send(
+				new Message.Builder()
+						.setKey(CANCEL_SYNC_KEY)
+						.build(),
+				null
+		);
 	}
 
 	public boolean hasRootView() {
@@ -81,7 +108,13 @@ public class CAwear {
 	}
 
 	public void sendAction(String key, String value, Notifier notifier) {
-		m_messenger.send(key, value, notifier);
+		m_messenger.send(
+				new Message.Builder()
+						.setKey(key)
+						.setBody( new Bytes(value.getBytes()) )
+						.build(),
+				notifier
+		);
 	}
 
 	//===================================================================================================
@@ -98,7 +131,8 @@ public class CAwear {
 		// Sure: hasView(key) == false (this view has not been made)
 		if (!m_storage.hasKey(key)) return false;
 
-		String json = new String( m_storage.get(key) );
+		Bytes viewBytes = m_storage.get(key);
+		String json = new String( viewBytes.data, viewBytes.offset, viewBytes.length );
 		View view;
 		try {
 			view = View.createFromJson(json, m_storage);
@@ -134,6 +168,10 @@ public class CAwear {
 		} else {
 			m_notifier.onComplete(false, "Failed");
 		}
+	}
+
+	private int getNewSessionId() {
+		return ++m_sessionIdCounter;
 	}
 
 }
