@@ -122,7 +122,6 @@ class GoogleMessenger implements
 		 * 		First byte is the length of the header
 		 * 		The header itself
 		 *		The body
-		 *
 		 */
 
 		byte[] data = me.getData();
