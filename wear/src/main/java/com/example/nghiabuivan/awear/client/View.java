@@ -18,8 +18,8 @@ public class View {
 		view.m_background = storage.get( obj.getString("backgroundImageKey") );
 
 		Item item = new Item()
-				.setName(obj.getString("name"))
-				.setImage(storage.get(obj.getString("backIconImageKey")));
+				.setName( obj.getString("name") )
+				.setImage( storage.get( obj.getString("backIconImageKey") ) );
 		view.m_items.add(item);
 
 		JSONArray array = obj.getJSONArray("items");

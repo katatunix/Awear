@@ -2,6 +2,7 @@ package com.example.nghiabuivan.awear.server;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,6 +18,8 @@ class GoogleMessenger implements
 
 	private ActionListener m_listener = null;
 	private GoogleApiClient m_googleClient;
+
+	private static final String TAG = "Awear";
 
 	public GoogleMessenger(Object context) {
 		m_googleClient = new GoogleApiClient.Builder((Context)context)
@@ -43,13 +46,13 @@ class GoogleMessenger implements
 
 	@Override
 	public void send(String key, String value, String nodeId) {
-		K.log("send string: " + key + ", " + value + "; to: " + nodeId);
+		Log.d(TAG, "send string: " + key + ", " + value + "; to: " + nodeId);
 		send(key, value.getBytes(), nodeId);
 	}
 
 	@Override
 	public void send(String key, byte[] value, String nodeId) {
-		K.log("send bytes: " + key + ", " + value.length + "; to: " + nodeId);
+		Log.d(TAG, "send bytes: " + key + ", " + value.length + "; to: " + nodeId);
 		Wearable.MessageApi.sendMessage(m_googleClient, nodeId, key, value).await();
 	}
 
@@ -64,7 +67,7 @@ class GoogleMessenger implements
 
 	@Override
 	public void onConnected(Bundle bundle) {
-		K.log("onConnected");
+		Log.d(TAG, "onConnected");
 		Wearable.MessageApi.addListener(m_googleClient, this);
 	}
 
@@ -72,7 +75,7 @@ class GoogleMessenger implements
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener != null) {
 			String value = new String(me.getData());
-			K.log("onMessageReceived: " + me.getPath() + ", " + value + "; from: " + me.getSourceNodeId());
+			Log.d(TAG, "onMessageReceived: " + me.getPath() + ", " + value + "; from: " + me.getSourceNodeId());
 			m_listener.onActionReceived( me.getPath(), value, me.getSourceNodeId() );
 		}
 	}

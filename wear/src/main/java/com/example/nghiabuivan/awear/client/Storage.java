@@ -14,6 +14,8 @@ class Storage {
 	private HashMap<String, Bytes> m_map = new HashMap<>();
 	private boolean m_hasNewData = false;
 
+	private static final String TAG = "Awear";
+
 	public Storage(String localDirPath) {
 		m_localDirPath = localDirPath;
 	}
@@ -38,7 +40,7 @@ class Storage {
 				byte[] buffer = new byte[count];
 				fis.read(buffer);
 				m_map.put(key, ret = new Bytes(buffer));
-				Log.d("Awear", "read file: " + filePath + ", data length: " + count);
+				Log.d(TAG, "read file: " + filePath + ", data length: " + count);
 			}
 		} catch (IOException ignored) {
 			ret = null;
@@ -78,16 +80,16 @@ class Storage {
 			if (temp.isDirectory()) {
 				emptyDir(temp);
 				temp.delete();
-				Log.d("Awear", "delete folder: " + f);
+				Log.d(TAG, "delete folder: " + f);
 			} else {
 				temp.delete();
-				Log.d("Awear", "delete file: " + f);
+				Log.d(TAG, "delete file: " + f);
 			}
 		}
 	}
 
 	private void saveFile(String name, Bytes bytes) throws IOException {
-		Log.d("Awear", "save file: " + name + ", data length: " + bytes.length);
+		Log.d(TAG, "save file: " + name + ", data length: " + bytes.length);
 		FileOutputStream fos = new FileOutputStream(name);
 		fos.write(bytes.data, bytes.offset, bytes.length);
 		fos.close();

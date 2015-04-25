@@ -8,12 +8,14 @@ import com.example.nghiabuivan.awear.client.CAwear;
 
 public class MainActivity extends Activity {
 
+	private static final String TAG = "Awear";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Log.d("AWear", "local dir path: " + getFilesDir().getAbsolutePath());
+		Log.d(TAG, "local dir path: " + getFilesDir().getAbsolutePath());
 		CAwear.createInstance(getFilesDir().getAbsolutePath() + '/', this);
 
 		FragmentTransitor ft = new FragmentTransitor(getFragmentManager(), R.id.activity_main);

@@ -25,6 +25,8 @@ class GoogleMessenger implements
 
 	private String m_currentNodeId = null;
 
+	private static final String TAG = "Awear";
+
 	public GoogleMessenger(Object context) {
 		m_googleClient = new GoogleApiClient.Builder((Context)context)
 				.addApi(Wearable.API)
@@ -62,7 +64,7 @@ class GoogleMessenger implements
 		);
 		pendingResult.setResultCallback(m_sendMessageResultCallback);
 
-		Log.d("AWear", "send: " + msg.getKey() + ", length: " + msg.getData().length + "; to: " + m_currentNodeId);
+		Log.d(TAG, "send: " + msg.getKey() + ", length: " + msg.getData().length + "; to: " + m_currentNodeId);
 		return true;
 	}
 
@@ -91,10 +93,10 @@ class GoogleMessenger implements
 			if (m_notifier == null) return;
 
 			if (result.getStatus().isSuccess()) {
-				Log.d("AWear", "send success");
+				Log.d(TAG, "send success");
 				m_notifier.onComplete(true, "Success");
 			} else {
-				Log.d("AWear", "send failed");
+				Log.d(TAG, "send failed");
 				m_notifier.onComplete(false, "Failed");
 			}
 		}
@@ -107,7 +109,7 @@ class GoogleMessenger implements
 			if (result.getNodes().size() > 0) {
 				// TODO: get a specific node
 				m_currentNodeId = result.getNodes().get(0).getId();
-				Log.d("AWear", "get a connected node: " + m_currentNodeId);
+				Log.d(TAG, "get a connected node: " + m_currentNodeId);
 			}
 		}
 	};
@@ -115,7 +117,7 @@ class GoogleMessenger implements
 	@Override
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener == null) return;
-		Log.d("AWear", "onMessageReceived: " + me.getPath() + ", " + me.getData().length + "; from: " + me.getSourceNodeId());
+		Log.d(TAG, "onMessageReceived: " + me.getPath() + ", " + me.getData().length + "; from: " + me.getSourceNodeId());
 
 		/**
 		 * Structure of a message:
