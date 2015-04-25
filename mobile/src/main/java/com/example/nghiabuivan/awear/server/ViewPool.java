@@ -1,5 +1,7 @@
 package com.example.nghiabuivan.awear.server;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +16,10 @@ public class ViewPool {
 	private HashMap<String, View> m_views = new HashMap<>();
 	private HashMap<String, byte[]> m_imageCache = new HashMap<>();
 	private ArrayList<String> m_sentKeys = new ArrayList<>();
+
+	private boolean m_isStopSending = false;
+
+	private static final String TAG = "Awear";
 
 	ViewPool(String dir, String rootViewKey) {
 		m_dir = dir;
@@ -38,8 +44,18 @@ public class ViewPool {
 	}
 
 	void sendViews(String nodeId, int sessionId, Messenger sender) {
+		synchronized (this) {
+			m_isStopSending = false;
+		}
+
 		m_sentKeys.clear();
 		sendView(m_rootViewKey, nodeId, sessionId, sender);
+	}
+
+	public void stopSending() {
+		synchronized (this) {
+			m_isStopSending = true;
+		}
 	}
 
 	//====================================================================================================
@@ -47,6 +63,8 @@ public class ViewPool {
 
 	private void sendView(String key, String nodeId, int sessionId, Messenger sender) {
 		if ( key == null || m_sentKeys.contains(key) || !m_views.containsKey(key) ) return;
+
+		if (isStopSending()) return;
 
 		View view = m_views.get(key);
 		String json;
@@ -66,7 +84,9 @@ public class ViewPool {
 		);
 		m_sentKeys.add(key);
 
-		checkAndSendImage( view.getBackgroundImageKey(), nodeId, sessionId, sender );
+		Log.d(TAG, "Send view: key = " + key + ", sessionId = " + sessionId + ", length = " + json.length());
+
+		checkAndSendImage(view.getBackgroundImageKey(), nodeId, sessionId, sender);
 		checkAndSendImage( view.getBackIconImageKey(), nodeId, sessionId, sender );
 
 		int count = view.getItemCount();
@@ -77,6 +97,8 @@ public class ViewPool {
 	}
 
 	private void checkAndSendImage(String imageKey, String nodeId, int sessionId, Messenger sender) {
+		if (isStopSending()) return;
+
 		if ( imageKey != null && !m_sentKeys.contains(imageKey) ) {
 			byte[] data = getImage(imageKey);
 			if (data != null) {
@@ -89,6 +111,8 @@ public class ViewPool {
 						nodeId
 				);
 				m_sentKeys.add(imageKey);
+
+				Log.d(TAG, "Send image: key = " + imageKey + ", sessionId = " + sessionId + ", length = " + data.length);
 			}
 		}
 	}
@@ -123,4 +147,9 @@ public class ViewPool {
 		return buffer;
 	}
 
+	private boolean isStopSending() {
+		synchronized (this) {
+			return m_isStopSending;
+		}
+	}
 }

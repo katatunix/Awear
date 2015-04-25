@@ -46,7 +46,7 @@ class GoogleMessenger implements
 
 	@Override
 	public void send(Message msg, String nodeId) {
-		Log.d(TAG, "send: " + msg.getKey() + ", " + msg.getData().length + "; to: " + nodeId);
+		//Log.d(TAG, "send: " + msg.getKey() + ", " + msg.getData().length + "; to: " + nodeId);
 		Wearable.MessageApi.sendMessage(m_googleClient, nodeId, msg.getKey(), msg.getData()).await();
 	}
 
@@ -68,7 +68,7 @@ class GoogleMessenger implements
 	@Override
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener != null) {
-			Log.d(TAG, "onMessageReceived: " + me.getPath() + ", length: " + me.getData().length + "; from: " + me.getSourceNodeId());
+			//Log.d(TAG, "onMessageReceived: " + me.getPath() + ", length: " + me.getData().length + "; from: " + me.getSourceNodeId());
 			m_listener.onActionReceived( new Message(me.getPath(), me.getData()), me.getSourceNodeId() );
 		}
 	}

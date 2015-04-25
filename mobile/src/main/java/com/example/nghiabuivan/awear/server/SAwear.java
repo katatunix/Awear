@@ -45,6 +45,7 @@ public class SAwear {
 					m_sendingThread.start();
 
 				} else if (key.equals(CANCEL_SYNC_KEY)) {
+					Log.d(TAG, "Receive a CANCEL_SYNC request");
 					if (m_sendingThread != null && m_sendingThread.isRunning()) {
 						m_sendingThread.forceStop();
 					}
@@ -96,6 +97,7 @@ public class SAwear {
 
 		public void forceStop() {
 			m_isForceStop = true;
+			m_pool.stopSending();
 		}
 
 		private void setRunning(boolean val) {
