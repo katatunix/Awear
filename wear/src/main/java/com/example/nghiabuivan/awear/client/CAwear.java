@@ -87,13 +87,15 @@ public class CAwear {
 	}
 
 	public void cancelRemoteSync() {
-		m_sessionId = 0;
+		if (m_sessionId == 0) return;
 		m_messenger.send(
 				new Message.Builder()
 						.setKey(CANCEL_SYNC_KEY)
+						.setHeaderAsInt(m_sessionId)
 						.build(),
 				null
 		);
+		m_sessionId = 0;
 	}
 
 	public boolean hasRootView() {

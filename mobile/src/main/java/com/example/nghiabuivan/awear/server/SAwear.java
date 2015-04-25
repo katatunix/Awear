@@ -2,13 +2,15 @@ package com.example.nghiabuivan.awear.server;
 
 import android.util.Log;
 
+import java.util.HashMap;
+
 public class SAwear {
 
 	private ViewCreator m_creator = null;
 	private ActionListener m_userListener = null;
 	private Messenger m_messenger;
 	private ViewPool m_pool;
-	private SendingThread m_sendingThread = null;
+	private HashMap<Integer, SendingThread> m_sendingThreads = new HashMap<>();
 
 	private static final String TAG = "Awear";
 
@@ -29,25 +31,21 @@ public class SAwear {
 				if (key.equals(START_SYNC_KEY)) {
 					int sessionId;
 					try { sessionId = msg.getHeaderAsInt(); } catch (Exception e) { return; }
-
 					Log.d(TAG, "Receive a START_SYNC request with sessionId = " + sessionId);
 
-					if (m_sendingThread != null && m_sendingThread.isRunning()) {
-						Log.d(TAG, "Too busy, please wait...");
-						try {
-							m_sendingThread.join();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-
-					m_sendingThread = new SendingThread(m_pool, m_creator, nodeId, sessionId, m_messenger);
-					m_sendingThread.start();
+					cleanSendingThreads();
+					SendingThread thread = new SendingThread(m_pool, m_creator, FINISH_SYNC_KEY,
+							nodeId, sessionId, m_messenger);
+					m_sendingThreads.put(sessionId, thread);
+					thread.start();
 
 				} else if (key.equals(CANCEL_SYNC_KEY)) {
-					Log.d(TAG, "Receive a CANCEL_SYNC request");
-					if (m_sendingThread != null && m_sendingThread.isRunning()) {
-						m_sendingThread.forceStop();
+					int sessionId;
+					try { sessionId = msg.getHeaderAsInt(); } catch (Exception e) { return; }
+					Log.d(TAG, "Receive a CANCEL_SYNC request with sessionId = " + sessionId);
+
+					if (m_sendingThreads.containsKey(sessionId)) {
+						m_sendingThreads.get(sessionId).forceStop();
 					}
 				} else if (m_userListener != null) {
 					m_userListener.onActionReceived(msg, nodeId);
@@ -74,63 +72,12 @@ public class SAwear {
 		m_messenger.disconnect();
 	}
 
-	private static class SendingThread extends Thread {
-
-		private ViewPool m_pool;
-		private ViewCreator m_creator;
-		private String m_nodeId;
-		private int m_sessionId;
-		private Messenger m_messenger;
-
-		private boolean m_isRunning = false;
-		private boolean m_isForceStop = false;
-
-		public SendingThread(ViewPool pool, ViewCreator creator, String nodeId, int sessionId, Messenger messenger) {
-			m_pool = pool; m_creator = creator; m_nodeId = nodeId; m_sessionId = sessionId; m_messenger = messenger;
-		}
-
-		public boolean isRunning() {
-			synchronized (this) {
-				return m_isRunning;
+	private void cleanSendingThreads() {
+		for (Integer key : m_sendingThreads.keySet()) {
+			if ( !m_sendingThreads.get(key).isRunning() ) {
+				m_sendingThreads.remove(key);
 			}
 		}
-
-		public void forceStop() {
-			m_isForceStop = true;
-			m_pool.stopSending();
-		}
-
-		private void setRunning(boolean val) {
-			synchronized (this) {
-				m_isRunning = val;
-			}
-		}
-
-		@Override
-		public void run() {
-			setRunning(true);
-
-			m_pool.clearViews();
-			if (m_creator != null) {
-				m_creator.createViews(m_pool);
-			}
-
-			if (m_isForceStop) { setRunning(false); return; }
-
-			m_pool.sendViews(m_nodeId, m_sessionId, m_messenger); // slow and block
-
-			if (m_isForceStop) { setRunning(false); return; }
-
-			m_messenger.send(
-					new Message.Builder()
-							.setKey(FINISH_SYNC_KEY)
-							.setHeaderAsInt(m_sessionId)
-							.build(),
-					m_nodeId
-			);
-
-			setRunning(false);
-		}
-
 	}
+
 }
