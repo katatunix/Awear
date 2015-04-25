@@ -30,6 +30,8 @@ public class SAwear {
 					int sessionId;
 					try { sessionId = msg.getHeaderAsInt(); } catch (Exception e) { return; }
 
+					Log.d(TAG, "Receive a START_SYNC request with sessionId = " + sessionId);
+
 					if (m_sendingThread != null && m_sendingThread.isRunning()) {
 						Log.d(TAG, "Too busy, please wait...");
 						try {
@@ -80,6 +82,7 @@ public class SAwear {
 		private Messenger m_messenger;
 
 		private boolean m_isRunning = false;
+		private boolean m_isForceStop = false;
 
 		public SendingThread(ViewPool pool, ViewCreator creator, String nodeId, int sessionId, Messenger messenger) {
 			m_pool = pool; m_creator = creator; m_nodeId = nodeId; m_sessionId = sessionId; m_messenger = messenger;
@@ -92,7 +95,7 @@ public class SAwear {
 		}
 
 		public void forceStop() {
-			// TODO: forceStop()
+			m_isForceStop = true;
 		}
 
 		private void setRunning(boolean val) {
@@ -110,7 +113,12 @@ public class SAwear {
 				m_creator.createViews(m_pool);
 			}
 
+			if (m_isForceStop) { setRunning(false); return; }
+
 			m_pool.sendViews(m_nodeId, m_sessionId, m_messenger); // slow and block
+
+			if (m_isForceStop) { setRunning(false); return; }
+
 			m_messenger.send(
 					new Message.Builder()
 							.setKey(FINISH_SYNC_KEY)
