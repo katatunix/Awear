@@ -78,6 +78,7 @@ public class InAppFragment extends BaseFragment implements WearableListView.Clic
 			setBackground( nextView.getBackground() );
 			m_adapter.setView(nextView);
 			m_adapter.notifyDataSetChanged();
+			m_listView.scrollToPosition(0);
 		}
 	}
 
