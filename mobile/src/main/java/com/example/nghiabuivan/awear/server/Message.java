@@ -42,6 +42,12 @@ public class Message {
 		return new Bytes(m_data, s_offset + m_data[0]);
 	}
 
+	public String getBodyAsString() {
+		if (!isValid()) return null;
+		final int offset = s_offset + m_data[0];
+		return new String(m_data, offset, m_data.length - offset);
+	}
+
 	public byte[] getData() {
 
 		return m_data;

@@ -9,7 +9,7 @@ import java.util.Map;
 public class SAwear {
 
 	private ViewCreator m_creator = null;
-	private ActionListener m_userListener = null;
+	private ActionListener m_actionListener = null;
 	private Messenger m_messenger;
 	private ViewPool m_pool;
 	private HashMap<Integer, SendingThread> m_sendingThreads = new HashMap<>();
@@ -25,9 +25,9 @@ public class SAwear {
 		m_messenger = new GoogleMessenger(context);
 		m_pool = new ViewPool(dir, ROOT_VIEW_KEY);
 
-		ActionListener selfListener = new ActionListener() {
+		ServerListener serverListener = new ServerListener() {
 			@Override
-			public void onActionReceived(Message msg, String nodeId) {
+			public void onReceived(Message msg, String nodeId) {
 				String key = msg.getKey();
 
 				if (key.equals(START_SYNC_KEY)) {
@@ -49,13 +49,13 @@ public class SAwear {
 					if (m_sendingThreads.containsKey(sessionId)) {
 						m_sendingThreads.get(sessionId).forceStop();
 					}
-				} else if (m_userListener != null) {
-					m_userListener.onActionReceived(msg, nodeId);
+				} else if (m_actionListener != null) {
+					m_actionListener.onActionReceived( msg.getKey(), msg.getBodyAsString() );
 				}
 			}
 		};
 
-		m_messenger.setListener(selfListener);
+		m_messenger.setListener(serverListener);
 	}
 
 	public void registerViewCreator(ViewCreator creator) {
@@ -63,7 +63,7 @@ public class SAwear {
 	}
 
 	public void registerActionListener(ActionListener listener) {
-		m_userListener = listener;
+		m_actionListener = listener;
 	}
 
 	public void connect() {

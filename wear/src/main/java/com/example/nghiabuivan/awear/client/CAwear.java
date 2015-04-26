@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 public class CAwear {
 
-	private Storage m_storage;
-	private HashMap<String, View> m_views = new HashMap<>();
+	private final Storage m_storage;
+	private final HashMap<String, View> m_views = new HashMap<>();
 	private final Messenger m_messenger;
 	private Notifier m_notifier = null;
 	private int m_sessionId = 0;

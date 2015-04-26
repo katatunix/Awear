@@ -55,8 +55,8 @@ public class MainActivity extends ActionBarActivity implements ViewCreator, Acti
 	}
 
 	@Override
-	public void onActionReceived(Message msg, String nodeId) {
-		m_text = "onActionReceived: key=" + msg.getKey() + ", length=" + msg.getData().length + "; from: " + nodeId;
+	public void onActionReceived(String key, String value) {
+		m_text = "onActionReceived: key=" + key + ", value=" + value;
 		runOnUiThread(m_run);
 	}
 

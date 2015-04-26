@@ -1,6 +1,6 @@
 package com.example.nghiabuivan.awear.client;
 
-class Message {
+public class Message {
 	private String m_key = null;
 	private byte[] m_data = null;
 
@@ -9,6 +9,11 @@ class Message {
 
 	private Message() {
 
+	}
+
+	public Message(String key, byte[] data) {
+		m_key = key;
+		m_data = data;
 	}
 
 	public String getKey() {
@@ -35,6 +40,12 @@ class Message {
 	public Bytes getBody() {
 		if (!isValid()) return null;
 		return new Bytes(m_data, s_offset + m_data[0]);
+	}
+
+	public String getBodyAsString() {
+		if (!isValid()) return null;
+		final int offset = s_offset + m_data[0];
+		return new String(m_data, offset, m_data.length - offset);
 	}
 
 	public byte[] getData() {

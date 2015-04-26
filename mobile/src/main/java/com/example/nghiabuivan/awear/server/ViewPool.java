@@ -52,7 +52,7 @@ public class ViewPool {
 		sendView(m_rootViewKey, nodeId, sessionId, sender);
 	}
 
-	public void stopSending() {
+	void stopSending() {
 		synchronized (this) {
 			m_isStopSending = true;
 		}

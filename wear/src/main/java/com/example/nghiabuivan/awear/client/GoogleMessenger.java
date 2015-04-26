@@ -20,7 +20,7 @@ class GoogleMessenger implements
 		MessageApi.MessageListener {
 
 	private ClientListener m_listener = null;
-	private GoogleApiClient m_googleClient;
+	private final GoogleApiClient m_googleClient;
 	private Notifier m_notifier = null;
 
 	private String m_currentNodeId = null;

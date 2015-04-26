@@ -16,7 +16,7 @@ class GoogleMessenger implements
 		GoogleApiClient.OnConnectionFailedListener,
 		MessageApi.MessageListener {
 
-	private ActionListener m_listener = null;
+	private ServerListener m_listener = null;
 	private GoogleApiClient m_googleClient;
 
 	private static final String TAG = "Awear";
@@ -51,7 +51,7 @@ class GoogleMessenger implements
 	}
 
 	@Override
-	public void setListener(ActionListener listener) {
+	public void setListener(ServerListener listener) {
 		m_listener = listener;
 	}
 
@@ -68,8 +68,7 @@ class GoogleMessenger implements
 	@Override
 	public void onMessageReceived(MessageEvent me) {
 		if (m_listener != null) {
-			//Log.d(TAG, "onMessageReceived: " + me.getPath() + ", length: " + me.getData().length + "; from: " + me.getSourceNodeId());
-			m_listener.onActionReceived( new Message(me.getPath(), me.getData()), me.getSourceNodeId() );
+			m_listener.onReceived( new Message(me.getPath(), me.getData()), me.getSourceNodeId() );
 		}
 	}
 

@@ -7,6 +7,6 @@ interface Messenger {
 
 	public void send(Message msg, String nodeId);
 
-	public void setListener(ActionListener listener);
+	public void setListener(ServerListener listener);
 
 }
