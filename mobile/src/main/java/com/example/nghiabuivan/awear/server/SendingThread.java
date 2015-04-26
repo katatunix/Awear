@@ -52,6 +52,10 @@ class SendingThread extends Thread {
 		setRunning(true);
 
 		synchronized (SendingThread.class) {
+			if (isForceStop()) {
+				setRunning(false);
+				return;
+			}
 
 			m_pool.clearViews();
 			if (m_creator != null) {
